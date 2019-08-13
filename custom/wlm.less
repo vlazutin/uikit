@@ -1,0 +1,39 @@
+@import "../src/less/uikit.theme.less";
+@import "wlm/toggle.less";
+@import "wlm/metric.bar.less";
+
+@global-font-family: 'Montserrat', sans-serif;
+@global-font-size: 14px;
+
+@navbar-background: linear-gradient(to left, #28a5f5, #01ABE8);
+@navbar-nav-item-color: rgba(255, 255, 255, 0.8);
+@navbar-nav-item-hover-color: white;
+
+@button-default-color: rgba(255, 255, 255, .8);
+@button-default-border: rgba(255, 255, 255, .5);
+@button-default-background: transparent;
+
+@button-default-hover-color: white;
+@button-default-hover-border: 1px solid white;
+@button-default-hover-background: transparent;
+
+@button-default-active-color: @button-default-hover-color;
+@button-default-active-border: @button-default-hover-border;
+@button-default-active-background: @button-default-hover-background;
+
+.page-container {
+  max-width: 1500px;
+  margin: auto;
+}
+
+.hook-button-default() {
+  border-radius: 500px;
+}
+
+.hook-button-default-hover() {
+  border: @button-default-active-border;
+}
+
+.hook-button-default-active() {
+  border: @button-default-active-border;
+}

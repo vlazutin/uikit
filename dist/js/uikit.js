@@ -6,13 +6,6 @@
     (global = global || self, global.UIkit = factory());
 }(this, function () { 'use strict';
 
-    function bind(fn, context) {
-        return function (a) {
-            var l = arguments.length;
-            return l ? l > 1 ? fn.apply(context, arguments) : fn.call(context, a) : fn.call(context);
-        };
-    }
-
     var objPrototype = Object.prototype;
     var hasOwnProperty = objPrototype.hasOwnProperty;
 
@@ -601,12 +594,12 @@
 
         targets = toEventTargets(targets);
 
-        if (selector) {
-            listener = delegate(targets, selector, listener);
-        }
-
         if (listener.length > 1) {
             listener = detail(listener);
+        }
+
+        if (selector) {
+            listener = delegate(targets, selector, listener);
         }
 
         type.split(' ').forEach(function (type) { return targets.forEach(function (target) { return target.addEventListener(type, listener, useCapture); }
@@ -1722,6 +1715,10 @@
 
         element = toNode(element);
 
+        if (!element) {
+            return {};
+        }
+
         var ref = getWindow(element);
         var top = ref.pageYOffset;
         var left = ref.pageXOffset;
@@ -2622,7 +2619,6 @@
         isInput: isInput,
         filter: filter,
         within: within,
-        bind: bind,
         hasOwn: hasOwn,
         hyphenate: hyphenate,
         camelize: camelize,
@@ -3145,7 +3141,7 @@
 
             if (methods) {
                 for (var key in methods) {
-                    this[key] = bind(methods[key], this);
+                    this[key] = methods[key].bind(this);
                 }
             }
         };
@@ -3362,7 +3358,7 @@
                 return;
             }
 
-            handler = detail(isString(handler) ? component[handler] : bind(handler, component));
+            handler = detail(isString(handler) ? component[handler] : handler.bind(component));
 
             if (self) {
                 handler = selfFilter(handler);
@@ -3386,6 +3382,10 @@
 
         }
 
+        function detail(listener) {
+            return function (e) { return isArray(e.detail) ? listener.apply(void 0, [e].concat(e.detail)) : listener(e); };
+        }
+
         function selfFilter(handler) {
             return function selfHandler(e) {
                 if (e.target === e.currentTarget || e.target === e.current) {
@@ -3396,10 +3396,6 @@
 
         function notIn(options, key) {
             return options.every(function (arr) { return !arr || !hasOwn(arr, key); });
-        }
-
-        function detail(listener) {
-            return function (e) { return isArray(e.detail) ? listener.apply(void 0, [e].concat(e.detail)) : listener(e); };
         }
 
         function coerce(type, value) {
@@ -5053,18 +5049,21 @@
 
                     }
 
-                    return {rows: rows, translates: translates, height: !transitionInProgress ? elHeight : false};
+                    var padding = this.parallax && getPaddingBottom(this.parallax, rows, translates);
+
+                    return {padding: padding, rows: rows, translates: translates, height: !transitionInProgress ? elHeight : false};
 
                 },
 
                 write: function(ref) {
                     var stacks = ref.stacks;
                     var height = ref.height;
+                    var padding = ref.padding;
 
 
                     toggleClass(this.$el, this.clsStack, stacks);
 
-                    css(this.$el, 'paddingBottom', this.parallax);
+                    css(this.$el, 'paddingBottom', padding);
                     height !== false && css(this.$el, 'height', height);
 
                 },
@@ -5109,6 +5108,22 @@
 
     };
 
+    function getPaddingBottom(distance, rows, translates) {
+        var column = 0;
+        var max = 0;
+        var maxScrolled = 0;
+        for (var i = rows.length - 1; i >= 0; i--) {
+            for (var j = column; j < rows[i].length; j++) {
+                var el = rows[i][j];
+                var bottom = el.offsetTop + height(el) + (translates && -translates[i][j]);
+                max = Math.max(max, bottom);
+                maxScrolled = Math.max(maxScrolled, bottom + (j % 2 ? distance : distance / 8));
+                column++;
+            }
+        }
+        return maxScrolled - max;
+    }
+
     function getMarginTop(root, cls) {
 
         var nodes = toNodes(root.children);
@@ -5129,6 +5144,10 @@
 
     // IE 11 fix (min-height on a flex container won't apply to its flex items)
     var FlexBug = isIE ? {
+
+        props: {
+            selMinHeight: String
+        },
 
         data: {
             selMinHeight: false,
@@ -7937,21 +7956,13 @@
             return;
         }
 
-        if (isNumeric(value)) {
+        if (isNumeric(value) && isString(value) && value.match(/^-?\d/)) {
 
-            return propOffset + toFloat(value);
-
-        } else if (isString(value) && value.match(/^-?\d/)) {
-
-            return toPx(value);
+            return propOffset + toPx(value);
 
         } else {
 
-            var el = value === true ? $el.parentNode : query(value, $el);
-
-            if (el) {
-                return offset(el).top + el.offsetHeight;
-            }
+            return offset(value === true ? $el.parentNode : query(value, $el)).bottom;
 
         }
     }
@@ -11252,7 +11263,7 @@
 
     };
 
-    var SliderParallax = {
+    var SlideshowParallax = {
 
         mixins: [Parallax],
 
@@ -11883,7 +11894,7 @@
         clearTimeout(trackTimer);
     }
 
-    var overflowRe = /(auto|scroll)/;
+    var overflowRe = /auto|scroll/;
 
     function scrollParents(element) {
         var scrollEl = getScrollingElement();
@@ -12239,9 +12250,9 @@
     UIkit.component('notification', Notification);
     UIkit.component('parallax', Parallax$1);
     UIkit.component('slider', Slider$1);
-    UIkit.component('sliderParallax', SliderParallax);
+    UIkit.component('sliderParallax', SlideshowParallax);
     UIkit.component('slideshow', Slideshow$1);
-    UIkit.component('slideshowParallax', SliderParallax);
+    UIkit.component('slideshowParallax', SlideshowParallax);
     UIkit.component('sortable', Sortable);
     UIkit.component('tooltip', Tooltip);
     UIkit.component('upload', Upload);
