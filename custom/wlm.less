@@ -54,9 +54,9 @@
 }
 
 .page-container {
-  margin: auto;
   max-width: 90vw;
-  min-height: ~"calc(100vh - 190px)";
+  min-height: ~"calc(100vh - 220px)";
+  margin: auto auto 30px;
 
   &.medium-width {
     max-width: 70vw;
@@ -68,7 +68,7 @@
   opacity: 0.5;
   filter: alpha(opacity=50);
 
-  &:hover {
+  .page-footer:hover & {
     opacity: 1;
     filter: alpha(opacity=1);
   }
