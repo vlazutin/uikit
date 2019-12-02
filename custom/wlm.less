@@ -56,8 +56,20 @@
 .page-container {
   margin: auto;
   max-width: 90vw;
+  min-height: ~"calc(100vh - 190px)";
 
   &.medium-width {
     max-width: 70vw;
+  }
+}
+
+.footer-logo {
+  height: 40px;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+
+  &:hover {
+    opacity: 1;
+    filter: alpha(opacity=1);
   }
 }
