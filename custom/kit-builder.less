@@ -1,0 +1,71 @@
+@import "../src/less/uikit.theme.less";
+
+@global-font-family: 'Montserrat', sans-serif;
+@global-font-size: 14px;
+
+@navbar-background: linear-gradient(to left, #0da264, #11d080);
+@navbar-nav-item-color: rgba(255, 255, 255, 0.8);
+@navbar-nav-item-hover-color: white;
+
+@button-primary-background: #11d080;
+@button-primary-hover-background: #0da264;
+@button-primary-active-background: @button-default-hover-background;
+
+@table-header-cell-font-size: 14px;
+
+.navbar-button {
+
+  &:extend(.uk-button);
+  background-color: transparent;
+  color: rgba(255, 255, 255, .8);
+  border-radius: 500px;
+  border: 1px solid @navbar-nav-item-color;
+  cursor: pointer;
+
+  &:hover {
+    color: @navbar-nav-item-hover-color;
+    border-color: @navbar-nav-item-hover-color;
+  }
+}
+
+.uk-navbar-nav > li > a {
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 15px;
+    right: ~"calc(102% - 15px)";
+    bottom: 20px;
+    height: 1px;
+    background-color: currentColor;
+    transition: .3s ease-in-out;
+    transition-property: right;
+  }
+
+  &:hover::before, &.active::before {
+    right: 15px;
+  }
+}
+
+.page-container {
+  max-width: 90vw;
+  min-height: ~"calc(100vh - 220px)";
+  margin: auto auto 30px;
+
+  &.medium-width {
+    max-width: 70vw;
+  }
+}
+
+.footer-logo {
+  height: 40px;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+
+  .page-footer:hover & {
+    opacity: 1;
+    filter: alpha(opacity=1);
+  }
+}
